@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                // Hỗ trợ async/await tốt hơn và các tính năng mới
+    "module": "CommonJS",              // Dành cho môi trường Node.js
+    "rootDir": "./src",                // Thư mục chứa mã nguồn TypeScript
+    "outDir": "./dist",                // Thư mục xuất mã JavaScript sau khi build
+    "strict": true,                    // Bật chế độ kiểm tra chặt chẽ của TypeScript
+
+    // Tăng cường trải nghiệm code
+    "baseUrl": "./src",
+  "paths": {
+    "@config/*": ["database/config/*"],
+    "@model/*": ["database/model/*"],
+    "@services/*": ["services/*"],
+    "@utils/*": ["utils/*"],
+    "@helpers/*": ["helpers/*"],
+    "@controllers/*": ["database/controllers/*"],
+    "@repository/*": ["database/repository/*"],
+    "@database/*": ["database/*"],
+    "@type/*":["types/*"],
+    "@constants/*":["constants/*"]
+  },
+
+    // Các cờ tối ưu & bảo mật
+    "esModuleInterop": true,           // Hỗ trợ import/export theo chuẩn ES6
+    "skipLibCheck": true,              // Bỏ qua kiểm tra các file `.d.ts` không cần thiết
+    "forceConsistentCasingInFileNames": true, // Bắt buộc thống nhất chữ hoa/thường trong tên file
+
+    // Tối ưu cho môi trường Node.js
+    "moduleResolution": "Node",        // Dò tìm module theo chuẩn Node.js
+    "allowSyntheticDefaultImports": true, // Cho phép import mặc định kể cả khi không hỗ trợ chính thức
+    "isolatedModules": true            // Bắt buộc mỗi file là một module riêng biệt (tăng hiệu suất)
+  },
+  "include": ["src/**/*.ts"],           // Chỉ định các file được biên dịch
+  "exclude": ["node_modules", "dist"]   // Loại trừ thư mục không cần biên dịch
+}
