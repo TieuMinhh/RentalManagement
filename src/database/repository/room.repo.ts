@@ -64,4 +64,14 @@ async function findByID(id: number): Promise<any> {
   });
 }
 
-export default { findAll, findByID, findOne, getRoomsWithServices };
+async function create(data: any): Promise<any> {
+  return await Room.create(data);
+}
+
+async function update(id: number, data: any): Promise<any> {
+  return await Room.update(data, {
+    where: { id: id },
+  });
+}
+
+export default { findAll, findByID, findOne, getRoomsWithServices, create, update };
