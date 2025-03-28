@@ -26,9 +26,6 @@ async function getRoomsWithServices(): Promise<any> {
       {
         model: Service,
         as: "services",
-        through: {
-          attributes: ["quantity"],
-        },
         attributes: ["id", "service_name", "price"],
       },
     ],
@@ -55,9 +52,6 @@ async function findByID(id: number): Promise<any> {
       {
         model: Service,
         as: "services",
-        through: {
-          attributes: ["quantity"],
-        },
         attributes: ["id", "service_name", "price"],
       },
     ],
@@ -74,4 +68,11 @@ async function update(id: number, data: any): Promise<any> {
   });
 }
 
-export default { findAll, findByID, findOne, getRoomsWithServices, create, update };
+export default {
+  findAll,
+  findByID,
+  findOne,
+  getRoomsWithServices,
+  create,
+  update,
+};

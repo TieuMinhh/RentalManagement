@@ -5,7 +5,7 @@ export interface RoomTypeAttributes {
   id: number;
   type_name: string;
   description?: string;
-  status: "active" | "lock"
+  status: "active" | "lock";
 }
 
 const RoomType = sequelize.define(
@@ -24,10 +24,11 @@ const RoomType = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    status:{
+    status: {
       type: DataTypes.ENUM("active", "lock"),
-      allowNull:false
-    }
+      allowNull: false,
+      defaultValue: "active",
+    },
   },
   {
     tableName: "room_types",

@@ -11,9 +11,6 @@ async function getServiceWithRooms(): Promise<any> {
       {
         model: Room,
         as: "rooms",
-        through: {
-          attributes: ["quantity"],
-        },
         attributes: ["id", "name", "price", "status"],
       },
     ],
@@ -28,4 +25,21 @@ async function findByID(id: number): Promise<any> {
   return await Service.findByPk(id);
 }
 
-export default { findAll, findByID, findOne, getServiceWithRooms };
+async function create(data: any): Promise<any> {
+  return await Service.create(data);
+}
+
+async function update(id: number, data: any): Promise<any> {
+  return await Service.update(data, {
+    where: { id: id },
+  });
+}
+
+export default {
+  findAll,
+  findByID,
+  findOne,
+  getServiceWithRooms,
+  create,
+  update,
+};

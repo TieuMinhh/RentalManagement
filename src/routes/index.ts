@@ -11,6 +11,7 @@ import lease from "./v1/lease";
 import invoice from "./v1/invoice";
 import payment from "./v1/payment";
 import notification from "./v1/mailNotification";
+import maintenanceRecords from "./v1/maintenanceRecords";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/api/v1", lease);
 router.use("/api/v1", invoice);
 router.use("/api/v1", payment);
 router.use("/api/v1", notification);
+router.use("/api/v1", maintenanceRecords);
 
 export default router;

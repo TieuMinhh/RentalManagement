@@ -25,7 +25,25 @@ async function findOne(data: any): Promise<any> {
 }
 
 async function findByID(id: number): Promise<any> {
-  return await RoomService.findByPk(id);
+  return await RoomService.findByPk(id, {
+    attributes: { exclude: ["room_id", "service_id"] },
+    include: [
+      {
+        model: Room,
+        as: "room",
+        attributes: ["id", "name", "price"],
+      },
+      {
+        model: Service,
+        as: "service",
+        attributes: ["id", "service_name", "price"],
+      },
+    ],
+  });
 }
 
-export default { findAll, findByID, findOne };
+async function create(data: any): Promise<any> {
+  return await RoomService.create(data);
+}
+
+export default { findAll, findByID, findOne, create };

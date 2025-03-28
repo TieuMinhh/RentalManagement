@@ -1,10 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "@config/sequelize";
-import Room from "./room.model";
-import Service from "./service.model";
 
-const RoomService = sequelize.define(
-  "RoomService",
+const MaintenanceRecord = sequelize.define(
+  "MaintenanceRecord",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -14,29 +12,30 @@ const RoomService = sequelize.define(
     room_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: Room, key: "id" },
     },
-    service_id: {
+    employee_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: Service, key: "id" },
+      allowNull: true,
     },
-    service_date: {
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    maintenance_date: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    status: {
+      type: DataTypes.ENUM("pending", "in_progress", "completed"),
+      allowNull: false,
+      defaultValue: "pending",
+    },
   },
   {
-    tableName: "room_services",
+    tableName: "maintenance_records",
     timestamps: false,
-    indexes: [
-      {
-        unique: true,
-        fields: ["room_id", "service_id"],
-      },
-    ],
   }
 );
 
-export default RoomService;
+export default MaintenanceRecord;

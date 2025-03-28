@@ -32,7 +32,7 @@ const Room = sequelize.define(
     status: {
       type: DataTypes.ENUM("available", "occupied", "maintenance"),
       allowNull: false,
-      defaultValue:"available"
+      defaultValue: "available",
     },
   },
   {

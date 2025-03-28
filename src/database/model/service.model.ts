@@ -1,6 +1,13 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "@config/sequelize";
 
+export interface ServiceAttributes {
+  id: number;
+  service_name: string;
+  price: number;
+  status: "active" | "lock";
+}
+
 const Service = sequelize.define(
   "Service",
   {
@@ -16,6 +23,11 @@ const Service = sequelize.define(
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM("active", "lock"),
+      allowNull: false,
+      defaultValue: "active",
     },
   },
   {

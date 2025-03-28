@@ -10,6 +10,7 @@ import Lease from "@model/lease.model";
 import Invoice from "@model/invoice.model";
 import Payment from "@model/payment.model";
 import MailNotification from "@model/mailNotification.model";
+import MaintenanceRecord from "@model/maintenanceRecords.model";
 
 export const initAssociations = () => {
   Room.belongsTo(RoomType, { foreignKey: "room_type_id", as: "roomType" });
@@ -66,5 +67,25 @@ export const initAssociations = () => {
   Lease.hasMany(MailNotification, {
     foreignKey: "lease_id",
     as: "mailNotification",
+  });
+
+  MaintenanceRecord.belongsTo(Room, {
+    foreignKey: "room_id",
+    as: "room",
+  });
+
+  MaintenanceRecord.belongsTo(Employee, {
+    foreignKey: "employee_id",
+    as: "employee",
+  });
+
+  Room.hasMany(MaintenanceRecord, {
+    foreignKey: "room_id",
+    as: "maintenanceRecords",
+  });
+
+  Employee.hasMany(MaintenanceRecord, {
+    foreignKey: "employee_id",
+    as: "maintenanceRecords",
   });
 };
