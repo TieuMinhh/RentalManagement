@@ -13,4 +13,37 @@ async function findAll(): Promise<any> {
   });
 }
 
-export default { findAll };
+async function findByID(id: number) {
+  return await Tenant.findByPk(id, {
+    attributes: { exclude: ["user_id"] },
+    include: [
+      {
+        model: User,
+        as: "user",
+      },
+    ],
+  });
+}
+
+async function findByUserID(user_id: number) {
+  return await Tenant.findOne({
+    where: { user_id },
+    attributes: { exclude: ["user_id"] },
+    include: [
+      {
+        model: User,
+        as: "user",
+      },
+    ],
+  });
+}
+
+async function findByIDCard(id_card: string) {
+  return await Tenant.findOne({ where: { id_card } });
+}
+
+async function create(data: any): Promise<any> {
+  return await Tenant.create(data);
+}
+
+export default { findAll, findByID, findByUserID, create, findByIDCard };

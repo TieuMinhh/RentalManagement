@@ -11,6 +11,7 @@ interface UserAttributes {
   password: string;
   created_at?: Date;
   updated_at?: Date;
+  status: "active" | "lock";
 }
 
 const User = sequelize.define<Model<UserAttributes>>(
@@ -54,10 +55,15 @@ const User = sequelize.define<Model<UserAttributes>>(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    status: {
+      type: DataTypes.ENUM("active", "lock"),
+      allowNull: false,
+      defaultValue: "active",
+    },
   },
   {
     tableName: "users",
-    timestamps: false, // Vì đã có created_at và updated_at nên không cần timestamps tự động
+    timestamps: false,
   }
 );
 

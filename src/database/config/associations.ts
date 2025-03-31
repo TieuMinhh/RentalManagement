@@ -11,6 +11,7 @@ import Invoice from "@model/invoice.model";
 import Payment from "@model/payment.model";
 import MailNotification from "@model/mailNotification.model";
 import MaintenanceRecord from "@model/maintenanceRecords.model";
+import LeaseRequest from "@model/LeaseRequest.model";
 
 export const initAssociations = () => {
   Room.belongsTo(RoomType, { foreignKey: "room_type_id", as: "roomType" });
@@ -44,9 +45,6 @@ export const initAssociations = () => {
 
   Tenant.belongsTo(User, { foreignKey: "user_id", as: "user" });
   User.hasOne(Tenant, { foreignKey: "user_id", as: "tenant" });
-
-  Lease.belongsTo(Room, { foreignKey: "room_id", as: "room" });
-  Lease.belongsTo(Tenant, { foreignKey: "tenant_id", as: "tenant" });
 
   Room.hasMany(Lease, { foreignKey: "room_id", as: "leases" });
   Tenant.hasMany(Lease, { foreignKey: "tenant_id", as: "leases" });
@@ -87,5 +85,16 @@ export const initAssociations = () => {
   Employee.hasMany(MaintenanceRecord, {
     foreignKey: "employee_id",
     as: "maintenanceRecords",
+  });
+
+  LeaseRequest.belongsTo(Tenant, { foreignKey: "tenant_id", as: "tenant" });
+  LeaseRequest.belongsTo(Room, { foreignKey: "room_id", as: "room" });
+  LeaseRequest.hasOne(Lease, { foreignKey: "lease_request_id", as: "lease" });
+
+  Lease.belongsTo(Room, { foreignKey: "room_id", as: "room" });
+  Lease.belongsTo(Tenant, { foreignKey: "tenant_id", as: "tenant" });
+  Lease.belongsTo(LeaseRequest, {
+    foreignKey: "lease_request_id",
+    as: "leaseRequest",
   });
 };
