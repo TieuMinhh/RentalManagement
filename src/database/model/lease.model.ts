@@ -11,7 +11,9 @@ export interface LeaseAttributes {
   end_date?: Date;
   rent_price: number;
   deposit: number;
-  status: "active" | "terminated" | "expired";
+  paid_amount: number;
+  balance_due: number;
+  status: "pending" | "signed" | "active" | "terminated" | "expired";
 }
 
 const Lease = sequelize.define(
@@ -54,9 +56,28 @@ const Lease = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
-    status: {
-      type: DataTypes.ENUM("active", "terminated", "expired"),
+    paid_amount: {
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      defaultValue: 0,
+      comment: "Số tiền đã thanh toán",
+    },
+    balance_due: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Số tiền còn phải thanh toán",
+    },
+    status: {
+      type: DataTypes.ENUM(
+        "pending",
+        "signed",
+        "active",
+        "terminated",
+        "expired"
+      ),
+      allowNull: false,
+      defaultValue: "pending",
     },
   },
   {

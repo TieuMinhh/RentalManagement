@@ -68,6 +68,10 @@ async function update(id: number, data: any): Promise<any> {
   });
 }
 
+const updateStatus = async (room_id: number, status: string) => {
+  return await Room.update({ status }, { where: { id: room_id } });
+};
+
 export default {
   findAll,
   findByID,
@@ -75,4 +79,5 @@ export default {
   getRoomsWithServices,
   create,
   update,
+  updateStatus,
 };

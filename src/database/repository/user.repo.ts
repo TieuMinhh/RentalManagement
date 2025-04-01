@@ -28,6 +28,10 @@ async function findByID(id: number): Promise<any> {
   });
 }
 
+async function findOne(data: any): Promise<any> {
+  return await User.findOne({ where: data });
+}
+
 async function findByEmail(email: string): Promise<any> {
   return await User.findOne({
     where: { email },
@@ -52,4 +56,16 @@ async function update(id: number, data: any): Promise<any> {
   });
 }
 
-export default { findAll, findByID, findByEmail, create, update };
+async function updateRole(userId: number, newRoleId: number): Promise<any> {
+  return await User.update({ role_id: newRoleId }, { where: { id: userId } });
+}
+
+export default {
+  findAll,
+  findByID,
+  findOne,
+  findByEmail,
+  create,
+  update,
+  updateRole,
+};

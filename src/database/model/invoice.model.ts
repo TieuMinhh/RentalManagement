@@ -8,6 +8,7 @@ export interface InvoiceAttributes {
   invoice_date: Date;
   due_date: Date;
   total_amount: number;
+  paid_amount?: number;
   payment_status: "pending" | "paid" | "overdue";
 }
 
@@ -39,9 +40,15 @@ const Invoice = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
+    paid_amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
     payment_status: {
       type: DataTypes.ENUM("pending", "paid", "overdue"),
       allowNull: false,
+      defaultValue: "pending",
     },
   },
   {

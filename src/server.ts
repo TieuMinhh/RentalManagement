@@ -6,6 +6,7 @@ import routes from "./routes";
 import fileUpload from "express-fileupload";
 import { initAssociations } from "@config/associations";
 import { connectToDB } from "@database/index";
+import activateLeases from "cronJobs/activateLeases";
 
 const app = express();
 initAssociations();
@@ -57,6 +58,9 @@ app.use((req, res) => {
     message: "Không tìm thấy đường dẫn",
   });
 });
+
+// Chạy ngay khi server khởi động
+activateLeases();
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on PORT : ${PORT}`);

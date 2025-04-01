@@ -1,5 +1,3 @@
-import LeaseRequestRepo from "@repository/leaseRequest.repo";
-
 import asyncHandler from "@helpers/asyncHandler";
 import {
   BadRequestResponse,
@@ -8,6 +6,7 @@ import {
 } from "@utils/apiResponse";
 import RoomRepo from "@repository/room.repo";
 import TenantRepo from "@repository/tenant.repo";
+import LeaseRequestRepo from "@repository/leaseRequest.repo";
 
 const getLeaseRequests = asyncHandler(async (req, res) => {
   const leaseRequests = await LeaseRequestRepo.findAll();
@@ -38,15 +37,23 @@ const getLeaseByTenantID = asyncHandler(async (req, res) => {
 
 const requestLease = asyncHandler(async (req, res) => {
   const user_id = req.user?.id;
-  const { room_id, start_date, rent_price, deposit, tenant_info } = req.body;
+  const { room_id, start_date, end_date, rent_price, deposit, tenant_info } =
+    req.body;
 
-  let tenant : any = await TenantRepo.findByUserID(Number(user_id));
+  const roomStatus = await RoomRepo.findByID(Number(room_id));
+  if (roomStatus.status !== "available")
+    return new BadRequestResponse(
+      "Phòng đã có người thuê hoặc đang bảo trì"
+    ).send(res);
+
+  let tenant: any = await TenantRepo.findByUserID(Number(user_id));
 
   if (!tenant) {
     const existingTenant = await TenantRepo.findByIDCard(tenant_info.id_card);
-    
-    if (existingTenant) return new BadRequestResponse("CMND/CCCD này đã tồn tại").send(res);
-  
+
+    if (existingTenant)
+      return new BadRequestResponse("CMND/CCCD này đã tồn tại").send(res);
+
     tenant = await TenantRepo.create({
       user_id,
       id_card: tenant_info.id_card,
@@ -55,25 +62,35 @@ const requestLease = asyncHandler(async (req, res) => {
   } else {
     if (
       (tenant_info.id_card && tenant.id_card !== tenant_info.id_card) ||
-      (tenant_info.vehicle_plate && tenant.vehicle_plate !== tenant_info.vehicle_plate)
+      (tenant_info.vehicle_plate &&
+        tenant.vehicle_plate !== tenant_info.vehicle_plate)
     ) {
-      return new BadRequestResponse("Thông tin người thuê không trùng khớp").send(res);
+      return new BadRequestResponse(
+        "Thông tin người thuê không trùng khớp"
+      ).send(res);
     }
   }
 
-  const existingRequest = await LeaseRequestRepo.findPendingByTenantId(tenant.id);
+  const existingRequest = await LeaseRequestRepo.findPendingByTenantId(
+    tenant.id
+  );
   if (existingRequest)
-    return new BadRequestResponse("Bạn đã có yêu cầu thuê trọ đang chờ duyệt").send(res);
+    return new BadRequestResponse(
+      "Bạn đã có yêu cầu thuê trọ đang chờ duyệt"
+    ).send(res);
 
   const leaseRequest = await LeaseRequestRepo.create({
     tenant_id: tenant.id,
     room_id,
     start_date,
+    end_date,
     rent_price,
     deposit,
   });
 
-  return new SuccessResponse("Yêu cầu thuê trọ đã được gửi", { leaseRequest }).send(res);
+  return new SuccessResponse("Yêu cầu thuê trọ đã được gửi", {
+    leaseRequest,
+  }).send(res);
 });
 
 const cancelLeaseRequest = asyncHandler(async (req, res) => {

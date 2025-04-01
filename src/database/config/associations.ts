@@ -12,6 +12,7 @@ import Payment from "@model/payment.model";
 import MailNotification from "@model/mailNotification.model";
 import MaintenanceRecord from "@model/maintenanceRecords.model";
 import LeaseRequest from "@model/LeaseRequest.model";
+import Verification from "@model/verification.model";
 
 export const initAssociations = () => {
   Room.belongsTo(RoomType, { foreignKey: "room_type_id", as: "roomType" });
@@ -97,4 +98,6 @@ export const initAssociations = () => {
     foreignKey: "lease_request_id",
     as: "leaseRequest",
   });
+
+  Verification.belongsTo(User, { foreignKey: "id_account", as: "user" });
 };

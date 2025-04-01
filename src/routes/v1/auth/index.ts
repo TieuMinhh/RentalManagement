@@ -3,14 +3,13 @@ import {
   logIn,
   refreshToken,
   signUp,
-//   refreshToken,
-//   changeInfo,
-//   changePassword,
-//   resetPasswordForUser,
-//   forgotPassword,
-//   resetPassword,
-}
-from "./auth.controller";
+  changeInfo,
+  changePassword,
+  resetPasswordForUser,
+  forgotPassword,
+  resetPassword,
+} from "./auth.controller";
+import { authAdmin, authSystem } from "middlewares/auth";
 // import schema from "./schema";
 // import validator from "@helpers/validator";
 // import { authAdmin } from "middlewares/auth";
@@ -32,28 +31,29 @@ router.post(
   // validator(schema.refreshToken),
   refreshToken
 );
-// router.put(
-//   "/change-password",
-//   authUser,
-//   //   validator(schema.changePassword),
-//   changePassword
-// );
-// router.put(
-//   "/change-info",
-//   authUser,
-//   // validator(schema.changeInfo),
-//   changeInfo
-// );
-// router.put("/reset-password/:userId", authAdmin, resetPasswordForUser);
-// router.post(
-//   "/forget-password",
-//   //   validator(schema.forgetPassword),
-//   forgotPassword
-// );
-// router.post(
-//   "/update-password",
-//   // validator(schema.resetPassword),
-//   resetPassword
-// );
+
+router.put(
+  "/change-info",
+  authSystem,
+  // validator(schema.changeInfo),
+  changeInfo
+);
+router.put(
+  "/change-password",
+  authSystem,
+  //   validator(schema.changePassword),
+  changePassword
+);
+router.put("/reset-password/:userId", authAdmin, resetPasswordForUser);
+router.post(
+  "/forget-password",
+  //   validator(schema.forgetPassword),
+  forgotPassword
+);
+router.post(
+  "/update-password",
+  // validator(schema.resetPassword),
+  resetPassword
+);
 
 export default router;

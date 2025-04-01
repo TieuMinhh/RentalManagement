@@ -13,4 +13,8 @@ async function findAll(): Promise<any> {
   });
 }
 
-export default { findAll };
+const create = async (data: any) => {
+  return await Payment.create(data);
+};
+
+export default { findAll, create };

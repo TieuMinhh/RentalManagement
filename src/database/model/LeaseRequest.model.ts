@@ -21,6 +21,10 @@ const LeaseRequest = sequelize.define(
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
+    end_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
     rent_price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -33,6 +37,10 @@ const LeaseRequest = sequelize.define(
       type: DataTypes.ENUM("pending", "approved", "rejected", "canceled"),
       allowNull: false,
       defaultValue: "pending",
+    },
+    lease_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     created_at: {
       type: DataTypes.DATE,

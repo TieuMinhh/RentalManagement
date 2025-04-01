@@ -100,6 +100,13 @@ async function updateStatus(
   return await LeaseRequest.update({ status }, { where: { id } });
 }
 
+async function updateLeaseID(requestId: number, leaseId: number): Promise<any> {
+  return await LeaseRequest.update(
+    { lease_id: leaseId },
+    { where: { id: requestId } }
+  );
+}
+
 export default {
   findAll,
   findByID,
@@ -108,4 +115,5 @@ export default {
   findPendingByTenantId,
   create,
   updateStatus,
+  updateLeaseID,
 };
