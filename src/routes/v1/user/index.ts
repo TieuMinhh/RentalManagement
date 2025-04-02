@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getUsers,getUserBySelf } from "./user.controller";
-import { authAdmin, authTenant } from "middlewares/auth";
+import { getUsers, getUserByID, getUserBySelf } from "./user.controller";
+import { authAdmin, authEmployee, authTenant } from "middlewares/auth";
 
 const router = Router();
 
-router.get("/users",authAdmin, getUsers);
-router.get("/user/by-self",authTenant, getUserBySelf);
+router.get("/users", authAdmin, getUsers);
+router.get("/user/by-id/:id", authEmployee, getUserByID);
+router.get("/user/by-self", authTenant, getUserBySelf);
 
 export default router;

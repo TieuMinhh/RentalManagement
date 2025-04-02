@@ -64,7 +64,7 @@ const signUp = asyncHandler(async (req, res) => {
 
   if (newUser && file) {
     const imageUrl = await uploadFileToCloudinary(file);
-    await UserRepo.update(newUser.id_account, { avatar: imageUrl });
+    await UserRepo.update(newUser.id, { avatar: imageUrl });
     newUser.avatar = imageUrl;
   }
 
@@ -131,7 +131,7 @@ const changeInfo = asyncHandler(async (req, res) => {
   await user.save();
 
   return new SuccessResponse(Messages.user.successChangeInfo, {
-    full_name: user.name,
+    full_name: user.full_name,
     email: user.email,
     phone: user.phone,
     avatar: user.avatar,

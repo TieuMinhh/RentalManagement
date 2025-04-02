@@ -1,5 +1,3 @@
-import LeaseRepo from "@repository/lease.repo";
-
 import asyncHandler from "@helpers/asyncHandler";
 import {
   BadRequestResponse,
@@ -8,9 +6,11 @@ import {
   SuccessResponse,
 } from "@utils/apiResponse";
 import RoomRepo from "@repository/room.repo";
-import LeaseRequestRepo from "@repository/leaseRequest.repo";
 import UserRepo from "@repository/user.repo";
+import LeaseRepo from "@repository/lease.repo";
 import InvoiceRepo from "@repository/invoice.repo";
+import LeaseRequestRepo from "@repository/leaseRequest.repo";
+import mail from "@helpers/mail";
 
 const getLeases = asyncHandler(async (req, res) => {
   const leases = await LeaseRepo.findAll();
@@ -49,10 +49,8 @@ const approveLeaseRequest = asyncHandler(async (req, res) => {
   if (leaseRequest.status !== "pending")
     return new BadRequestResponse("Yêu cầu này đã được xử lý").send(res);
 
-  // Cập nhật trạng thái yêu cầu thuê trọ
   await LeaseRequestRepo.updateStatus(Number(request_id), "approved");
 
-  // Tạo hợp đồng với trạng thái "pending" (chờ ký)
   const lease: any = await LeaseRepo.create({
     room_id: leaseRequest.room?.id,
     tenant_id: leaseRequest.tenant?.id,
@@ -65,8 +63,9 @@ const approveLeaseRequest = asyncHandler(async (req, res) => {
     status: "pending",
   });
 
-  // Gán hợp đồng cho yêu cầu thuê trọ
   await LeaseRequestRepo.updateLeaseID(Number(request_id), Number(lease.id));
+
+  await mail.sendRoomRequestApproved(leaseRequest?.tenant?.user?.email);
 
   return new SuccessResponse(
     "Yêu cầu thuê trọ đã được duyệt, chờ người thuê ký",
@@ -78,57 +77,102 @@ const signLease = asyncHandler(async (req, res) => {
   const { lease_id } = req.params;
   const user_id = req.user?.id;
 
-  // Tìm kiếm hợp đồng
   const lease: any = await LeaseRepo.findByID(Number(lease_id));
-  if (!lease) {
-    return new NotFoundResponse("Hợp đồng không tồn tại").send(res);
-  }
+  if (!lease) return new NotFoundResponse("Hợp đồng không tồn tại").send(res);
 
-  // Kiểm tra quyền của người dùng
-  if (lease.tenant?.user_id !== user_id) {
+  if (lease.tenant?.user_id !== user_id)
     return new ForbiddenResponse("Bạn không thể ký hợp đồng này").send(res);
-  }
 
-  // Kiểm tra trạng thái hợp đồng
   if (lease.status !== "pending") {
     return new BadRequestResponse(
       "Hợp đồng không thể ký ở trạng thái hiện tại"
     ).send(res);
   }
 
-  // Tính tổng tiền cần thanh toán (rent_price - deposit)
   const totalAmount = parseFloat(
     (Number(lease.rent_price) - Number(lease.deposit)).toFixed(2)
   );
 
-  // Cập nhật balance_due trong bảng lease
   await LeaseRepo.updateBalanceDue(lease.id, totalAmount);
 
-  // Tạo hóa đơn
   const invoice = await InvoiceRepo.create({
     lease_id: lease.id,
     invoice_date: new Date(),
     due_date: new Date(new Date().setDate(new Date().getDate() + 7)), // Hạn thanh toán sau 7 ngày
     total_amount: totalAmount,
     payment_status: "pending",
-  }).catch((err) => {
-    console.error("Lỗi khi tạo hóa đơn:", err);
-    return new BadRequestResponse("Lỗi khi tạo hóa đơn").send(res);
   });
 
-  // Cập nhật trạng thái hợp đồng thành "signed"
   await LeaseRepo.updateStatus(Number(lease_id), "signed");
 
-  // Cập nhật role_id của user từ 4 (GUEST) thành 3 (TENANT)
   await UserRepo.updateRole(Number(user_id), 3);
 
-  // Cập nhật trạng thái phòng thành "occupied"
   await RoomRepo.updateStatus(lease.room?.id, "occupied");
+
+  await mail.sendSignedLease(lease?.tenant?.user?.email);
 
   return new SuccessResponse("Hợp đồng đã được ký và hóa đơn đã được tạo", {
     lease_id,
     invoice,
   }).send(res);
+});
+
+const endLeaseByTenant = asyncHandler(async (req, res) => {
+  const { lease_id } = req.params;
+  const user_id = req.user?.id;
+
+  const lease: any = await LeaseRepo.findByID(Number(lease_id));
+  if (!lease) return new NotFoundResponse("Hợp đồng không tồn tại").send(res);
+
+  if (lease.tenant?.user_id !== user_id)
+    return new ForbiddenResponse(
+      "Bạn không có quyền kết thúc hợp đồng này"
+    ).send(res);
+
+  if (lease.status === "terminated")
+    return new BadRequestResponse("Hợp đồng này đã kết thúc rồi").send(res);
+
+  if (lease.balance_due > 0)
+    return new BadRequestResponse(
+      "Không thể kết thúc hợp đồng vì còn nợ tiền phòng chưa đóng"
+    ).send(res);
+
+  await LeaseRepo.update(lease.id, {
+    status: "terminated",
+    end_date: new Date(),
+  });
+
+  await RoomRepo.updateStatus(lease.room?.id, "available");
+
+  await mail.sendEndLease(lease?.tenant?.user?.email);
+
+  return new SuccessResponse("Hợp đồng đã kết thúc thành công", {}).send(res);
+});
+
+const endLeaseByEmployee = asyncHandler(async (req, res) => {
+  const { lease_id } = req.params;
+
+  const lease: any = await LeaseRepo.findByID(Number(lease_id));
+  if (!lease) return new NotFoundResponse("Hợp đồng không tồn tại").send(res);
+
+  if (lease.status === "terminated")
+    return new BadRequestResponse("Hợp đồng này đã kết thúc").send(res);
+
+  if (lease.balance_due > 0)
+    return new BadRequestResponse(
+      "Không thể kết thúc hợp đồng vì còn nợ tiền phòng chưa đóng"
+    ).send(res);
+
+  await LeaseRepo.update(lease.id, {
+    status: "terminated",
+    end_date: new Date(),
+  });
+
+  await RoomRepo.updateStatus(lease.room?.id, "available");
+
+  await mail.sendEndLease(lease?.tenant?.user?.email);
+
+  return new SuccessResponse("Hợp đồng đã kết thúc thành công", {}).send(res);
 });
 
 export {
@@ -137,4 +181,6 @@ export {
   getLeaseByTenantID,
   approveLeaseRequest,
   signLease,
+  endLeaseByTenant,
+  endLeaseByEmployee,
 };

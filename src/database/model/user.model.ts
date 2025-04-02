@@ -7,6 +7,7 @@ interface UserAttributes {
   full_name: string;
   email: string;
   phone: string;
+  avatar?: string;
   role_id: number;
   password: string;
   created_at?: Date;
@@ -34,6 +35,10 @@ const User = sequelize.define<Model<UserAttributes>>(
     phone: {
       type: DataTypes.STRING(15),
       allowNull: false,
+    },
+    avatar: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
     },
     role_id: {
       type: DataTypes.INTEGER,

@@ -14,7 +14,7 @@ async function findAll(): Promise<any> {
       {
         model: RoomImage,
         as: "images",
-        attributes: ["id", "image_url", "description"],
+        attributes: ["id", "image_url"],
       },
     ],
   });
@@ -47,7 +47,7 @@ async function findByID(id: number): Promise<any> {
       {
         model: RoomImage,
         as: "images",
-        attributes: ["id", "image_url", "description"],
+        attributes: ["id", "image_url"],
       },
       {
         model: Service,

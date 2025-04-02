@@ -5,6 +5,8 @@ import {
   getLeaseByTenantID,
   approveLeaseRequest,
   signLease,
+  endLeaseByTenant,
+  endLeaseByEmployee,
 } from "./lease.controller";
 import { authEmployee, authGuestOrTenant, authTenant } from "middlewares/auth";
 
@@ -19,5 +21,15 @@ router.post(
   approveLeaseRequest
 );
 router.put("/lease/sign-lease/:lease_id", authGuestOrTenant, signLease);
+router.put(
+  "/lease/end-lease-by-tenant/:lease_id",
+  authTenant,
+  endLeaseByTenant
+);
+router.put(
+  "/lease/end-lease-by-employee/:lease_id",
+  authEmployee,
+  endLeaseByEmployee
+);
 
 export default router;

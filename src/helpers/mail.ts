@@ -46,6 +46,44 @@ const mail = {
     await sendEmail(userEmail, "Thông báo mở khoá tài khoản", html);
   },
 
+  // Gửi thông báo yêu cầu thuê trọ đã được duyệt và yêu cầu ký hợp đồng
+  async sendRoomRequestApproved(userEmail: string) {
+    const html = `
+      <p>Yêu cầu thuê trọ của bạn đã được duyệt!</p>
+      <p>Vui lòng ký hợp đồng để bắt đầu chuyển vào ở.</p>
+      <p>Chúc bạn một kỳ nghỉ tuyệt vời tại phòng trọ của chúng tôi!</p>
+    `;
+    await sendEmail(userEmail, "Thông báo duyệt yêu cầu thuê trọ", html);
+  },
+
+  // Gửi thông báo đã kỹ hợp đồng thành công và yêu cầu thanh toán hoá đơn
+  async sendSignedLease(userEmail: string) {
+    const html = `
+      <p>Bạn vừa ký hợp đồng thuê trọ thành công!</p>
+      <p>Vui lòng thanh toán một phần hoặc toàn bộ phí trong hoá đơn để bắt đầu chuyển vào ở.</p>
+      <p>Chúc bạn một kỳ nghỉ tuyệt vời tại phòng trọ của chúng tôi!</p>
+    `;
+    await sendEmail(userEmail, "Thông báo ký hoá đơn thành công", html);
+  },
+
+  // Gửi thông báo kết thúc hợp đồng thuê trọ
+  async sendEndLease(userEmail: string) {
+    const html = `
+      <p>Bạn vừa kết thúc hợp đồng thuê trọ với chúng tôi!</p>
+      <p>Hẹn gặp lại bạn trong tương lai!</p>
+    `;
+    await sendEmail(userEmail, "Thông báo kết thúc hợp đồng thuê trọ", html);
+  },
+
+  // Gửi thông báo thanh toán hoá đơn thành công
+  async sendProcessInvoice(userEmail: string) {
+    const html = `
+      <p>Bạn vừa thanh toán hoá đơn thành công!</p>
+      <p>Chúc bạn vui vẻ !!!</p>
+    `;
+    await sendEmail(userEmail, "Thông báo thanh toán hoá đơn thành công", html);
+  },
+
   // Gửi link đặt lại mật khẩu
   async sendResetPassword(userEmail: string, resetLink: string) {
     const html = `
@@ -109,6 +147,16 @@ const mail = {
 
     await sendEmail(userEmail, "Đặt lại mật khẩu", html);
   },
+
+  // Gửi thông báo cập nhật mật khẩu thành công
+  async sendResetPasswordSuccess(userEmail: string) {
+    const html = `
+      <p>Bạn vừa cập nhật mật khẩu mới thành công</p>
+      <p>Chúc bạn kì nghỉ vui vẻ <3</p>
+    `;
+    await sendEmail(userEmail, "Thông báo cập nhật mật khẩu thành công", html);
+  },
+
   // Tạo mã xác nhận ngẫu nhiên 6 chữ số
   createCode() {
     return Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join(
